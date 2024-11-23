@@ -1,0 +1,19 @@
+---
+title: "p8105_hw6_ns3782"
+author: "NSK"
+date: "2024-11-23"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+# Problem 1
+
+
+```{r}
+
+```
