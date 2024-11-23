@@ -2,7 +2,7 @@
 title: "p8105_hw6_ns3782"
 author: "NSK"
 date: "2024-11-23"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
