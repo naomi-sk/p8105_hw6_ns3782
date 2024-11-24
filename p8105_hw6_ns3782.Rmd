@@ -9,6 +9,8 @@ output: github_document
 
 knitr::opts_chunk$set(echo = TRUE)
 
+library(tidyverse)
+
 ```
 
 # Problem 1
@@ -16,4 +18,31 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 
+# Load weather data
+
 ```
+
+# Problem 2
+
+```{r}
+
+# Load and clean homicide data
+
+homicide_data <- 
+  read_csv("homicide-data.csv") %>%
+  mutate(
+    city_state = paste(city, state, sep = ", "),
+    solved = case_when(
+      disposition == "Closed by arrest" ~ 1,
+      disposition == "Closed without arrest" ~ 1,
+      disposition == "Open/No arrest" ~ 0
+    ),
+    victim_age = as.numeric(victim_age)
+  ) %>%
+  filter(
+    !(city_state %in% c("Dallas, TX", "Phoenix, AZ", "Kansas City, MO", "Tulsa, AL")),
+    victim_race %in% c("White", "Black")
+  )
+
+```
+
