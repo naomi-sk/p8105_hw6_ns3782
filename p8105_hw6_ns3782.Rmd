@@ -102,3 +102,18 @@ city_results <- homicide_data %>%
   select(city_state, OR, OR_lower, OR_upper, p.value)
 
 ```
+
+
+```{r}
+
+city_results %>%
+  mutate(city_state = fct_reorder(city_state, OR)) %>%
+  ggplot(aes(x = OR, y = city_state)) +
+  geom_point() +
+  geom_errorbarh(aes(xmin = OR_lower, xmax = OR_upper), height = 0.2) +
+  labs(title = "Association Between Victim Sex and Solved Homicides by City",
+       x = "Odds Ratio", 
+       y = "City") 
+
+```
+
