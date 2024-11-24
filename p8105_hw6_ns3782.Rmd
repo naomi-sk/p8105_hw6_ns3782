@@ -22,7 +22,7 @@ library(tidyverse)
 
 ```
 
-# Problem 2
+# Problem 2: U.S. City Homicides
 
 ```{r}
 
@@ -46,3 +46,36 @@ homicide_data <-
 
 ```
 
+## Adjusted odds ratios for solved homicides by victim sex in Baltimore, MD
+
+```{r}
+
+# Create new dataset filtering for Baltimore
+
+baltimore_df <- 
+  homicide_data %>%
+  filter(city_state == "Baltimore, MD")
+
+# Fit logistic regression
+
+baltimore_solved_logistic <- 
+  baltimore_df %>%
+  glm(solved ~ victim_age + victim_race + victim_sex, 
+      data = ., 
+      family = binomial())
+
+# Model results with estimate and confidence interval
+
+baltimore_solved_logistic %>%
+  broom::tidy(conf.int = TRUE) %>%
+  mutate(
+    OR = exp(estimate),
+    OR_lower = exp(conf.low),
+    OR_upper = exp(conf.high)
+  ) %>%
+  select(term, log_OR = estimate, OR, OR_lower, OR_upper, p.value) %>%
+  knitr::kable(digits = 3)
+
+```
+
+Based on the logistic regression analysis of Baltimore homicides, the odds of solving a case are 0.35 times lower for male victims compared to female victims (OR = 0.35, 95% CI: 0.27, 0.47), after adjusting for victim age and race.
