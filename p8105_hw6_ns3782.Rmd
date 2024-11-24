@@ -79,3 +79,26 @@ baltimore_solved_logistic %>%
 ```
 
 Based on the logistic regression analysis of Baltimore homicides, the odds of solving a case are 0.35 times lower for male victims compared to female victims (OR = 0.35, 95% CI: 0.27, 0.47), after adjusting for victim age and race.
+
+## Adjusted odds ratios for solved homicides by victim sex in 47 U.S. cities
+
+```{r}
+
+city_results <- homicide_data %>%
+  group_by(city_state) %>%           
+  nest() %>%                         
+  mutate(
+    results = map(data, ~glm(solved ~ victim_age + victim_race + victim_sex, 
+                            data = ., family = binomial()) %>%
+                    broom::tidy(conf.int = TRUE) %>%
+                    filter(term == "victim_sexMale"))
+  ) %>%
+  unnest(results) %>%
+  mutate(
+    OR = exp(estimate),
+    OR_lower = exp(conf.low),
+    OR_upper = exp(conf.high)
+  ) %>%
+  select(city_state, OR, OR_lower, OR_upper, p.value)
+
+```
