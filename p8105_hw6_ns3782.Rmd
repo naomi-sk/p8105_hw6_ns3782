@@ -207,11 +207,10 @@ After producing a final model through backwards selection, I compared its predic
 1. A simple model using only length at birth and gestational age
 2. An interaction model using head circumference, length, sex, and all their interactions
 
-To assess these models, I used cross-validation with 100 iterations to estimate prediction accuracy.
 
 ```{r}
 
-# First comparison: Main model vs Length-Gestational model
+# Create cross-validation splits
 
 cv_splits = 
   crossv_mc(birthweight, 100) %>% 
@@ -222,27 +221,32 @@ cv_splits =
 
 ```
 
-I first created 100 training and testing sets using cross-validation. 
+To compare the prediction accuracy of the three models, I first created 100 training and testing datasets using cross-validation.
 
 ```{r}
 
-# Compare main model to length at birth/gestational age model
+# Fit models and extract RMSEs
 
-cv_results_1 = 
+cv_res_df =
   cv_splits %>% 
   mutate(
-    main_fit = map(train, ~lm(bwt ~ babysex + bhead + blength + delwt + fincome + 
-                             frace + gaweeks + menarche + mheight + momage + 
-                             mrace + parity + ppwt + smoken + wtgain, data = .x)),
-    length_gest_fit = map(train, ~lm(bwt ~ blength + gaweeks, data = .x))
+    main_mod = map(train, ~lm(bwt ~ babysex + bhead + blength + delwt + fincome + 
+                               frace + gaweeks + menarche + mheight + momage + 
+                               mrace + parity + ppwt + smoken + wtgain, data = .x)),
+    length_gest_mod = map(train, ~lm(bwt ~ blength + gaweeks, data = .x)),
+    interaction_mod = map(train, ~lm(bwt ~ bhead * blength * babysex, data = .x))
   ) %>% 
   mutate(
-    rmse_main = map2_dbl(main_fit, test, rmse),
-    rmse_length_gest = map2_dbl(length_gest_fit, test, rmse)
+    rmse_main = map2_dbl(main_mod, test, rmse),
+    rmse_length_gest = map2_dbl(length_gest_mod, test, rmse),
+    rmse_interaction = map2_dbl(interaction_mod, test, rmse)
   )
+
 
 ```
 
-I first compared my model to a simpler model using only length at birth and gestational age as predictors.
+I then fit three models on each training dataset:
 
-The cross-validation process involved creating a 100 training/testing splits, fitting both models on each training set, and then computing prediction error on each testing set.
+* My main model selected through backwards selection
+* A simpler model using only length at birth and gestational age as predictors
+* An interaction model using head circumference, length, sex, and all interactions between these variables
