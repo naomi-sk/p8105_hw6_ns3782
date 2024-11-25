@@ -149,3 +149,29 @@ colSums(is.na(birthweight))
 
 ```
 
+## Backwards Selection: Regression model for birthweight
+
+Following data cleaning, I proceeded with backwards selection to produce an appropriate regression model for birthweight.
+
+```{r}
+
+# Full model: including all variables in birthweight dataset
+
+full_model <- lm(bwt ~ babysex + bhead + blength + delwt + fincome + 
+                   frace + gaweeks + menarche + mheight + momage + 
+                   mrace + parity + ppwt + smoken + wtgain, 
+                 data = birthweight)
+
+# Simple backwards selection
+
+final_model <- step(full_model)
+
+# Results of backwards selection
+
+summary(final_model)
+
+```
+
+After considering the dataset variables, several were excluded from the initial model. These included variables pnumlbw (previous number of low birth weight babies) and pnumgsa (number of prior small gestational age babies) as they had very few cases, which I assumed would make them weak predictors. In addition, I chose to remove malform (presence of malformations) as this represented rare birth events that I assumed would be consequences, rather than predictors of birth weight. The decision was also made to remove ppbmi (post partum BMI) as it would likely show high correlation with other maternal weight measurements (ppwt) already included in the model, which I assumed would potentially cause multicollinearity issues.
+
+I then proceeded with backwards selection to produce my final model. The final model contained all remaining variables based on AIC criterion, including family income and Asian race category which were not statistically significant at the 0.05 level, but were still included as they contributed to the model's overall fit. The model explains approximately 72% of the variation in birth weight (R² = 0.7181).
