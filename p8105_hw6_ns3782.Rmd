@@ -10,6 +10,8 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
+library(modelr)
+library(ggplot2)
 
 ```
 
@@ -175,3 +177,22 @@ summary(final_model)
 After considering the dataset variables, several were excluded from the initial model. These included variables pnumlbw (previous number of low birth weight babies) and pnumgsa (number of prior small gestational age babies) as they had very few cases, which I assumed would make them weak predictors. In addition, I chose to remove malform (presence of malformations) as this represented rare birth events that I assumed would be consequences, rather than predictors of birth weight. The decision was also made to remove ppbmi (post partum BMI) as it would likely show high correlation with other maternal weight measurements (ppwt) already included in the model, which I assumed would potentially cause multicollinearity issues.
 
 I then proceeded with backwards selection to produce my final model. The final model contained all remaining variables based on AIC criterion, including family income and Asian race category which were not statistically significant at the 0.05 level, but were still included as they contributed to the model's overall fit. The model explains approximately 72% of the variation in birth weight (R² = 0.7181).
+
+## Residual Plot for Birthweight Regression Model
+
+```{r}
+
+birthweight %>%
+  add_predictions(final_model) %>%
+  add_residuals(final_model) %>%
+  ggplot(aes(x = pred, y = resid)) +
+  geom_point(alpha = 0.3) +
+  geom_smooth(method = "lm") +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
+  labs(x = "Fitted Values",
+       y = "Residuals",
+       title = "Residuals vs Fitted Values") 
+
+```
+
+The residual plot produced shows some degree of heteroscedasticity given the that the spread of residuals appears to increase as fitted values increase (fan shape). Although most of the residuals appear to cluster around zero, there are some observable outliers, especially for lower predicted birth weights.
