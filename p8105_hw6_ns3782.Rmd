@@ -82,6 +82,25 @@ The log product of coefficients peaks around 2.0, with values ranging approximat
 
 The observed difference in distributions represents differences in the properties of the estimates obtained from bootstrapping: R-squared values must fall between 0 and 1 as they represent a proportion of explained variance, while the log product can exceed these bounds. Overall, this analysis shows the value of bootstrapping in understanding the sampling variability of model estimates, especially for quantities like the log product of coefficients where the theoretical sampling distribution isn't readily available.
 
+## 95% confidence interval for bootstrapping estimates
+
+```{r}
+
+# Create confidence interval table for estimates
+
+bootstrap_results %>%
+  summarise(
+    R2_lower = quantile(r2, 0.025),
+    R2_upper = quantile(r2, 0.975),
+    logprod_lower = quantile(log_prod, 0.025),
+    logprod_upper = quantile(log_prod, 0.975)
+  ) %>%
+  knitr::kable(
+    col.names = c("R² 2.5%", "R² 97.5%", "log(β₀*β₁) 2.5%", "log(β₀*β₁) 97.5%"),
+    digits = 3
+  )
+
+```
 
 # Problem 2: U.S. City Homicides
 
