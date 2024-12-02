@@ -18,7 +18,7 @@ library('rnoaa')
 
 ```
 
-# Problem 1
+# Problem 1: Bootstrapping
 
 
 ```{r}
@@ -36,6 +36,22 @@ weather_df =
     tmin = tmin / 10,
     tmax = tmax / 10) %>%
   select(name, id, everything())
+
+# Set seed for reproducibility
+
+set.seed(1)
+
+# Generate bootstrap results
+
+weather_bootstrap_results = 
+  weather_df %>%
+  modelr::bootstrap(n = 5000) %>%
+  mutate(
+    models = map(strap, \(df) lm(tmax ~ tmin, data = df)),
+    results = map(models, broom::tidy))  %>%
+  select(-strap, -models)  %>%
+  unnest(results)
+
 
 ```
 
